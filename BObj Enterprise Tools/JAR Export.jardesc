@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<jardesc>
+    <jar path="C:/Users/thm2011/Desktop/MassAliasUtil.jar"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/BObj Enterprise Tools/JAR Export.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
+    <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
+    <selectedProjects/>
+    <manifest generateManifest="true" mainClassHandleIdentifier="=BObj Enterprise Tools/src&lt;edu.cornell.weill.boe.enterprisetools{MassAliasUtil.java[MassAliasUtil" manifestLocation="/BObj Enterprise Tools/JAR Manifest" manifestVersion="1.0" reuseManifest="false" saveManifest="true" usesManifest="true">
+        <sealing sealJar="false">
+            <packagesToSeal/>
+            <packagesToUnSeal/>
+        </sealing>
+    </manifest>
+    <selectedElements exportClassFiles="true" exportJavaFiles="true" exportOutputFolder="false">
+        <javaElement handleIdentifier="=BObj Enterprise Tools/src"/>
+        <javaElement handleIdentifier="=BObj Enterprise Tools/lib"/>
+        <file path="/BObj Enterprise Tools/.classpath"/>
+    </selectedElements>
+</jardesc>
