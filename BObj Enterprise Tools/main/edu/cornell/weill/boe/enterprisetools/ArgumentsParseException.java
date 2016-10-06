@@ -1,9 +1,9 @@
 package edu.cornell.weill.boe.enterprisetools;
 
 @SuppressWarnings("serial")
-public class CommandParseException extends Exception {
+public class ArgumentsParseException extends Exception {
 
-	public CommandParseException(String string) {
+	public ArgumentsParseException(String string) {
 		super("Error Parsing Arguments: " + string);
 	}
 }

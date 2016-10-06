@@ -7,28 +7,38 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import com.crystaldecisions.sdk.occa.infostore.IInfoStore;
+
 import edu.cornell.weill.boe.enterprisetools.scripts.BObjUserScript;
 import edu.cornell.weill.boe.enterprisetools.scripts.CreateAliases;
 import edu.cornell.weill.boe.enterprisetools.scripts.PrintHelpText;
 
-public class CommandParser {
+public class ArgumentsParser {
 
 	static Options options = new Options();
 	static HelpFormatter formatter = new HelpFormatter();
 
 	static {
-		options.addOption("v", true, "Verbose?");
+		options.addOption("v", false, "Verbose?");
 		options.addOption("N", true, "New type of alias to create");
 		options.addOption("e", true, "Existing alias authentication type");
-		options.addOption("s", true, "Save changes?");
+		options.addOption("s", false, "Save changes?");
 		options.addOption("help", "print this message");
-
 	}
 
-	public static BObjUserScript parse(String[] args) throws CommandParseException, ParseException {
+	private final CommandLineParser parser = new DefaultParser();
 
-		CommandLineParser parser = new DefaultParser();
-		CommandLine cmd = parser.parse(options, args);
+	private CommandLine cmd = null;
+
+	public CommandLine getCmd() {
+		return cmd;
+	}
+
+	public ArgumentsParser(String[] args) throws ParseException {
+		cmd = parser.parse(options, args);
+	}
+
+	public BObjUserScript getScript(IInfoStore boInfoStore) throws ArgumentsParseException, ParseException {
 
 		if (cmd.hasOption("help")) {
 
@@ -36,12 +46,11 @@ public class CommandParser {
 
 		} else if (cmd.hasOption('N')) {
 
-			return new CreateAliases(cmd.hasOption("v"), cmd.hasOption("s"), cmd.getOptionValue("N"),
+			return new CreateAliases(boInfoStore, cmd.hasOption("v"), cmd.hasOption("s"), cmd.getOptionValue("N"),
 					cmd.getOptionValue("e"));
 
 		} else {
-			throw new CommandParseException("Invalid Arguments! Need to know what to do.");
+			throw new ArgumentsParseException("Invalid Arguments! Need to know what to do.");
 		}
-
 	}
 }

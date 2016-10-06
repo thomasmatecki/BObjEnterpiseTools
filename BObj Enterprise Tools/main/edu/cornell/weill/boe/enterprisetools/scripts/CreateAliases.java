@@ -3,6 +3,8 @@ package edu.cornell.weill.boe.enterprisetools.scripts;
 import java.util.Iterator;
 
 import com.crystaldecisions.sdk.exception.SDKException;
+import com.crystaldecisions.sdk.occa.infostore.IInfoObjects;
+import com.crystaldecisions.sdk.occa.infostore.IInfoStore;
 import com.crystaldecisions.sdk.plugin.desktop.user.IUser;
 import com.crystaldecisions.sdk.plugin.desktop.user.IUserAlias;
 import com.crystaldecisions.sdk.plugin.desktop.user.IUserAliases;
@@ -15,15 +17,18 @@ public class CreateAliases implements BObjUserScript {
 	private final boolean saveChanges;
 	private final String existingAliasAuthentication;
 	private final String newAliasAuthentication;
+	private final InfoStoreQueryHelper<IInfoObjects> isqh;
 
-	public CreateAliases(boolean verbose, boolean saveChanges, String newAuth, String existingAuth) {
+	public CreateAliases(IInfoStore boInfoStore, boolean verbose, boolean saveChanges, String newAuth,
+			String existingAuth) {
 		this.verbose = verbose;
 		this.saveChanges = saveChanges;
 		this.newAliasAuthentication = newAuth;
 		this.existingAliasAuthentication = existingAuth;
+		this.isqh = new InfoStoreQueryHelper<IInfoObjects>(boInfoStore, "CI_SYSTEMOBJECTS", "SI_KIND='User'");
 	}
 
-	public void run(InfoStoreQueryHelper<?> isqh) throws SDKException {
+	public void run() throws SDKException {
 
 		while (isqh.hasNext()) {
 
@@ -47,14 +52,15 @@ public class CreateAliases implements BObjUserScript {
 				IUserAlias userAlias = ialias.next();
 				String authentication = userAlias.getAuthentication();
 				if (verbose) {
-					System.out.print("\n\t" + userAlias.getID() + " / " + authentication);
+					System.out.print("\n\t" + userAlias.getID() + " / " + authentication
+							+ (userAlias.isDisabled() ? "(disabled)" : ""));
 				}
 
 				hasExisting = existingAliasAuthentication.equals(authentication) ? true : hasExisting;
 				hasNew = (newAliasAuthentication.equals(authentication)) ? true : hasNew;
 			}
 
-			if (!hasNew && hasExisting) {
+			if (saveChanges && !hasNew && hasExisting) {
 
 				String newAliasName = "newAliasAuthentication:" + user.getTitle();
 

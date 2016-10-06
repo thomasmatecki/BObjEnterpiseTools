@@ -4,5 +4,5 @@ import com.crystaldecisions.sdk.exception.SDKException;
 import edu.cornell.weill.boe.enterprisetools.InfoStoreQueryHelper;
 
 public interface BObjUserScript {
-	public void run(InfoStoreQueryHelper<?> isqh) throws SDKException;
+	public void run() throws SDKException;
 }

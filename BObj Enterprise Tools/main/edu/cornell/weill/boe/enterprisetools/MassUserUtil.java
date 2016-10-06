@@ -1,20 +1,12 @@
 package edu.cornell.weill.boe.enterprisetools;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-
 import org.apache.commons.cli.ParseException;
 
 import com.crystaldecisions.sdk.exception.SDKException;
 import com.crystaldecisions.sdk.framework.CrystalEnterprise;
 import com.crystaldecisions.sdk.framework.IEnterpriseSession;
 import com.crystaldecisions.sdk.framework.ISessionMgr;
-import com.crystaldecisions.sdk.occa.infostore.IInfoObjects;
 import com.crystaldecisions.sdk.occa.infostore.IInfoStore;
-import com.crystaldecisions.sdk.plugin.desktop.user.IUser;
-import com.crystaldecisions.sdk.plugin.desktop.user.IUserAlias;
-import com.crystaldecisions.sdk.plugin.desktop.user.IUserAliases;
 
 import edu.cornell.weill.boe.enterprisetools.scripts.BObjUserScript;
 
@@ -25,7 +17,9 @@ public class MassUserUtil implements com.crystaldecisions.sdk.plugin.desktop.pro
 		 * The main method is only going to be called when the jar is run from
 		 * the command line. If the jar is run a a program file within BI, the
 		 * entire main method will be skipped. Keep this in mind when adding
-		 * additional code to the main method.
+		 * additional code to the main method. Also note the hacky parsing of
+		 * the command line arguments needed to obtain a connection to a remote
+		 * BObj CMS.
 		 */
 
 		IEnterpriseSession boEnterpriseSession = null;
@@ -35,58 +29,72 @@ public class MassUserUtil implements com.crystaldecisions.sdk.plugin.desktop.pro
 		String cmsName = null;
 		String password = null;
 		String authType = null;
+		try {
+			if ((args.length > 4) && args[0] != null) {
+				/* Login Information; Note order of args */
 
-		/* Enforce all expected cmd line arguments have been submitted */
-		if ((args.length > 4) && args[0] != null) {
-			/* Login Information; Note order of args */
+				userName = args[0];
+				password = args[1];
+				cmsName = args[2];
+				authType = args[3];
+			} else {
+				throw new ArgumentsParseException("Invalid arguments passed for connection to remote CMS");
+			}
 
-			userName = args[0];
-			password = args[1];
-			cmsName = args[2];
-			authType = args[3];
+			// Initialize the Session Manager
+			boSessionMgr = CrystalEnterprise.getSessionMgr();
+
+			// Logon to the Session Manager to create a new BOE session.
+			boEnterpriseSession = boSessionMgr.logon(userName, password, cmsName, authType);
+
+			// Retrieve the InfoStore object
+			boInfoStore = (IInfoStore) boEnterpriseSession.getService("", "InfoStore");
+
+		} catch (SDKException sdke) {
+			System.out.println(sdke.getMessage());
+		} catch (ArgumentsParseException ape) {
+			System.out.println(ape.getMessage());
+		} finally {
+
+			/*
+			 * Execute Application Script. Do this even if an exception has
+			 * occurred when parsing the name and credentials of the remote BObj
+			 * CMS. Some Scripts(e.g. the help output) do not require a
+			 * connection. For those that do, the failure in the script
+			 * resulting from the lack of a connection is just more information
+			 * for the user.
+			 */
 
 			try {
-				// Initialize the Session Manager
-				boSessionMgr = CrystalEnterprise.getSessionMgr();
-
-				// Logon to the Session Manager to create a new BOE session.
-				boEnterpriseSession = boSessionMgr.logon(userName, password, cmsName, authType);
-
-				// Retrieve the InfoStore object
-				boInfoStore = (IInfoStore) boEnterpriseSession.getService("", "InfoStore");
-
-				// Execute Application Script
 				MassUserUtil mau = new MassUserUtil();
 				mau.run(boEnterpriseSession, boInfoStore, args);
-
 			} catch (SDKException sdke) {
 				System.out.println(sdke.getMessage());
 				System.exit(1);
 			}
-		} else {
-			System.out.println("... Invalid Arguments");
 		}
+
 	}
 
-	public void run(IEnterpriseSession boEnterpriseSession, IInfoStore boInfoStore, String args[]) throws SDKException {
-
-		InfoStoreQueryHelper<IInfoObjects> isqh;
+	public void run(IEnterpriseSession boEnterpriseSession, IInfoStore boInfoStore, String[] args) throws SDKException {
 
 		try {
 
-			BObjUserScript script = CommandParser.parse(args);
+			ArgumentsParser argsParser = new ArgumentsParser(args);
 
-			isqh = new InfoStoreQueryHelper<IInfoObjects>(boInfoStore, "CI_SYSTEMOBJECTS", "SI_KIND='User'");
+			BObjUserScript script = argsParser.getScript(boInfoStore);
 
-			script.run(isqh);
+			script.run();
 
 		} catch (SDKException sdke) {
 			throw sdke;
-		} catch (CommandParseException e) {
+		} catch (ArgumentsParseException e) {
 			throw new SDKException.InvalidArg(e);
 		} catch (ParseException e) {
 			throw new SDKException.InvalidArg(e);
 		}
+		
+		System.out.println();
 		System.out.println("Done.");
 	}
 }
