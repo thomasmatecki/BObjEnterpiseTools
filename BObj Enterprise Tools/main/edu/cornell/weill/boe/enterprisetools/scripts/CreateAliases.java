@@ -21,11 +21,13 @@ public class CreateAliases implements BObjUserScript {
 
 	public CreateAliases(IInfoStore boInfoStore, boolean verbose, boolean saveChanges, String newAuth,
 			String existingAuth) {
+		
 		this.verbose = verbose;
 		this.saveChanges = saveChanges;
 		this.newAliasAuthentication = newAuth;
 		this.existingAliasAuthentication = existingAuth;
 		this.isqh = new InfoStoreQueryHelper<IInfoObjects>(boInfoStore, "CI_SYSTEMOBJECTS", "SI_KIND='User'");
+	
 	}
 
 	public void run() throws SDKException {
