@@ -21,13 +21,13 @@ public class CreateAliases implements BObjUserScript {
 
 	public CreateAliases(IInfoStore boInfoStore, boolean verbose, boolean saveChanges, String newAuth,
 			String existingAuth) {
-		
+
 		this.verbose = verbose;
 		this.saveChanges = saveChanges;
 		this.newAliasAuthentication = newAuth;
 		this.existingAliasAuthentication = existingAuth;
 		this.isqh = new InfoStoreQueryHelper<IInfoObjects>(boInfoStore, "CI_SYSTEMOBJECTS", "SI_KIND='User'");
-	
+
 	}
 
 	public void run() throws SDKException {
@@ -54,23 +54,27 @@ public class CreateAliases implements BObjUserScript {
 				IUserAlias userAlias = ialias.next();
 				String authentication = userAlias.getAuthentication();
 				if (verbose) {
-					System.out.print("\n\t" + userAlias.getID() + " / " + authentication
+					System.out.print("\n\t" + userAlias.getID() + " / " + authentication + " / " + userAlias.getName()
 							+ (userAlias.isDisabled() ? "(disabled)" : ""));
 				}
 
 				hasExisting = existingAliasAuthentication.equals(authentication) ? true : hasExisting;
+
 				hasNew = (newAliasAuthentication.equals(authentication)) ? true : hasNew;
+
 			}
 
-			if (saveChanges && !hasNew && hasExisting) {
+			if (!hasNew && hasExisting) {
 
-				String newAliasName = "newAliasAuthentication:" + user.getTitle();
+				String newAliasName = newAliasAuthentication + ":" + user.getTitle();
 
-				System.out.println("\n\t ***Adding Alias " + newAliasName + "***");
+				System.out.println("\n\t ***NEW ALIAS: " + newAliasName + "***");
 
-				IUserAlias newAlias = userAliases.addNew(newAliasName, true);
-				user.setNewPassword("Password123");
-				newAlias.setDisabled(true);
+				if (saveChanges) {
+					IUserAlias newAlias = userAliases.addNew(newAliasName, true);
+					user.setNewPassword("Password123");
+					newAlias.setDisabled(true);
+				}
 			}
 
 			if (user.isDirty()) {
