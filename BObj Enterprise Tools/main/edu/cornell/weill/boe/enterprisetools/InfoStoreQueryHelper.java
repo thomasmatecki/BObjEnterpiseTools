@@ -3,8 +3,8 @@ package edu.cornell.weill.boe.enterprisetools;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-import com.crystaldecisions.sdk.occa.infostore.IInfoObject;
 import com.crystaldecisions.sdk.exception.SDKException;
+import com.crystaldecisions.sdk.occa.infostore.IInfoObject;
 import com.crystaldecisions.sdk.occa.infostore.IInfoObjects;
 import com.crystaldecisions.sdk.occa.infostore.IInfoStore;
 

@@ -7,10 +7,11 @@ import com.crystaldecisions.sdk.framework.CrystalEnterprise;
 import com.crystaldecisions.sdk.framework.IEnterpriseSession;
 import com.crystaldecisions.sdk.framework.ISessionMgr;
 import com.crystaldecisions.sdk.occa.infostore.IInfoStore;
+import com.crystaldecisions.sdk.plugin.desktop.program.IProgramBase;
 
 import edu.cornell.weill.boe.enterprisetools.scripts.BObjUserScript;
 
-public class MassUserUtil implements com.crystaldecisions.sdk.plugin.desktop.program.IProgramBase {
+public class MassUserUtil implements IProgramBase {
 
 	public static void main(String[] args) {
 		/*

@@ -2,7 +2,7 @@ package edu.cornell.weill.boe.enterprisetools;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -23,10 +23,10 @@ public class ArgumentsParser {
 		options.addOption("N", true, "New type of alias to create");
 		options.addOption("e", true, "Existing alias authentication type");
 		options.addOption("s", false, "Save changes?");
-		options.addOption("help", "print this message");
+
 	}
 
-	private final CommandLineParser parser = new DefaultParser();
+	private final CommandLineParser parser = new BasicParser();
 
 	private CommandLine cmd = null;
 
