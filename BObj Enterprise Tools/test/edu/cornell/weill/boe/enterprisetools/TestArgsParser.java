@@ -46,9 +46,5 @@ public class TestArgsParser {
 		}
 	}
 
-	@Test
-	public void testPrintHelp() {
-
-	}
 
 }
